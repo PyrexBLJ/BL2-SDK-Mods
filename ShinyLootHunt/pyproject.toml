@@ -11,5 +11,5 @@ dependencies = [
 [tool.sdkmod]
 name = "Shiny Loot Hunt"
 license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
-download = ""
+download = "https://github.com/PyrexBLJ/BL2-SDK-Mods/raw/refs/heads/main/ShinyLootHunt/ShinyLootHunt.zip"
 version = "1.0.0"
