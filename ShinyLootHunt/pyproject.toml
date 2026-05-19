@@ -1,0 +1,15 @@
+[project]
+name = "ShinyLootHunt"
+version = "1.0.0"
+authors = [{ name = "Pyrex" }, { name = "JoltzDude139" }, { name = "Exotek" }]
+description = "Collect Shiny variants of legendary guns, grenades & shields."
+dependencies = [
+    "command_extensions >= 3",
+    "SanitySaver >= 2.2",
+]
+
+[tool.sdkmod]
+name = "Shiny Loot Hunt"
+license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
+download = ""
+version = "1.0.0"
