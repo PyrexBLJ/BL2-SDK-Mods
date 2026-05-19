@@ -42,7 +42,7 @@ Infinity - 1%
 
 **Incinerator Clayton**
 
-Pyrophobia - 1%
+Pyrophobia - 2%
 
 
 **Spycho**
@@ -282,7 +282,7 @@ Slagga - 2%
 
 
 
-**Hyperious**
+**Hyperius**
 
 Shredifier - 1%
 
