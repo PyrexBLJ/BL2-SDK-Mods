@@ -11,17 +11,19 @@ from legacy_compat import legacy_compat
 
 if True:
     try:
-        assert __import__("command_extensions").__version_info__ >= (3,), "Please Install Command Extensions"
+        assert __import__("command_extensions").__version_info__ >= (3,), "[Shiny Loot Hunt] Please Install Command Extensions"
     except (AssertionError, ImportError) as ex:
         import webbrowser
-        webbrowser.open("https://bl-sdk.github.io/willow2-mod-db/requirements?mod=ShinyLootHunt")
+        webbrowser.open("https://bl-sdk.github.io/willow2-mod-db/mods/command-extensions/")
         raise ex
 
     with legacy_compat():
         try:
             import Mods.SanitySaver
         except:
-            print("It is highly recommended that you install SanitySaver with the shiny loot hunt mod")
+            import webbrowser
+            webbrowser.open("https://bl-sdk.github.io/willow2-mod-db/mods/sanitysaver/")
+            print("\n[Shiny Loot Hunt] Please Install Sanity Saver\n")
 
 
 ShinyVeruc: HiddenOption = HiddenOption("Shiny Veruc", False)
