@@ -1,6 +1,6 @@
 [project]
 name = "ShinyLootHunt"
-version = "1.0.0"
+version = "1.0.1"
 authors = [{ name = "Pyrex" }, { name = "JoltzDude139" }, { name = "Exotek" }]
 description = "Collect Shiny variants of legendary guns, grenades & shields."
 dependencies = [
@@ -13,4 +13,4 @@ name = "Shiny Loot Hunt"
 license = {name = "GPL3", url = "https://choosealicense.com/licenses/gpl-3.0/" }
 supported_games = ["BL2"]
 download = "https://github.com/PyrexBLJ/BL2-SDK-Mods/raw/refs/heads/main/ShinyLootHunt/ShinyLootHunt.zip"
-version = "1.0.0"
+version = "1.0.1"
