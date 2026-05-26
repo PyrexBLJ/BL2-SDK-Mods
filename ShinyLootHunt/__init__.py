@@ -8,6 +8,8 @@ import os
 import sys
 from pathlib import Path
 from legacy_compat import legacy_compat
+from .sources import DropOdds, Source, Loot_Sources
+from random import randint
 
 if True:
     try:
@@ -581,6 +583,80 @@ def DialogBoxCloseHook(obj: UObject, args: WrappedStruct, ret: Any, func: BoundF
         DialogBoxCloseHook.disable()
     return None
 
+def dropLoot(pool: str, location: UStruct) -> None:
+    obj = unrealsdk.construct_object("Behavior_SpawnLootAroundPoint", ENGINE.Outer)
+    obj.ItemPools = [unrealsdk.find_object("ItemPoolDefinition", pool)]
+    obj.SpawnVelocityRelativeTo = 0
+    obj.bTorque = False
+    obj.CircularScatterRadius = 10
+    obj.CustomLocation = unrealsdk.make_struct("AttachmentLocationData", Location=location, AttachmentBase=None, AttachmentName="")
+    obj.ApplyBehaviorToContext(get_pc(), IGNORE_STRUCT, None, None, None, IGNORE_STRUCT)
+    return None
+debug = False
+def tryDrop(src: Source, loc: UStruct) -> None:
+    global debug
+    if debug:
+        for pool in src.drop_pools:
+            if src.drop_location != None:
+                dropLoot(pool, src.drop_location)
+            else:
+                dropLoot(pool, loc)
+        return None
+    if src.drop_odds == DropOdds.OnePercent:
+        for pool in src.drop_pools:
+            if randint(1, 100) == 69:
+                if src.drop_location != None:
+                    dropLoot(pool, src.drop_location)
+                else:
+                    dropLoot(pool, loc)
+    elif src.drop_odds == DropOdds.TwoPercent:
+        for pool in src.drop_pools:
+            if randint(1, 100) in (67, 69):
+                if src.drop_location != None:
+                    dropLoot(pool, src.drop_location)
+                else:
+                    dropLoot(pool, loc)
+    elif src.drop_odds == DropOdds.FivePercent:
+        for pool in src.drop_pools:
+            if randint(1, 100) in (12, 24, 25, 67, 69): # i know i could just check a range but i want the funny numbers ok
+                if src.drop_location != None:
+                    dropLoot(pool, src.drop_location)
+                else:
+                    dropLoot(pool, loc)
+    return None
+
+@hook("WillowGame.WillowAIPawn:Died", Type.PRE)
+def AIPawnDiedHook(obj: UObject, args: WrappedStruct, ret: Any, _4: BoundFunction) -> None:
+    for src in Loot_Sources:
+        if obj.BalanceDefinitionState.BalanceDefinition != None:
+            if obj.BalanceDefinitionState.BalanceDefinition._path_name() == src.check:
+                loc = obj.Location
+                loc.Z += 75
+                tryDrop(src, loc)
+                break
+    return None
+
+@hook("WillowGame.Behavior_DropItems:ApplyBehaviorToContext", Type.PRE)
+@hook("WillowGame.Behavior_SpawnItems:ApplyBehaviorToContext", Type.PRE)
+def SpawnItemsHook(obj: UObject, args: WrappedStruct, ret: Any, _4: BoundFunction) -> None:
+    for src in Loot_Sources:
+        if obj._path_name() == src.check:
+            tryDrop(src, args.SelfObject.Location)
+            break
+    return None
+
+@hook("Engine.Pawn:PlayWeaponSwitch", Type.POST_UNCONDITIONAL)
+def PlayWeaponSwitchHook(obj: UObject, args: WrappedStruct, ret: Any, _4: BoundFunction) -> None:
+    global debug
+    if obj.BalanceDefinitionState.BalanceDefinition != None:
+        if obj.BalanceDefinitionState.BalanceDefinition._path_name() == "GD_Anemone_Pop_NP.Balance.PawnBalance_NP_Lt_Angvar" and "WillowAIPawn_" in str(obj) and obj.ExpLevel != 0 and obj.bIsDead == False:
+                if args.OldWeapon == None:
+                    if randint(1, 100) == 69 or debug:
+                        item = []
+                        items = unrealsdk.find_class("ItemPool").ClassDefaultObject.SpawnBalancedInventoryFromPool(unrealsdk.find_object("ItemPoolDefinition", "GD_Itempools.Runnables.Pool_Infinity_Shiny"), get_pc().PlayerReplicationInfo.ExpLevel + get_pc().OverpowerChoiceValue, 1, get_pc(), item, bInventoryMayDropOnDeath=True)
+                        items[1][0].GiveTo(obj, True)
+    return None
+
 @hook("WillowGame.FrontendGFxMovie:Start", Type.POST)
 def LoadTextModHook(obj: UObject, args: WrappedStruct, ret: Any, func: BoundFunction) -> None:
     if ENGINE.GetCurrentWorldInfo().GetStreamingPersistentMapName().lower() == "menumap":
@@ -603,4 +679,4 @@ def Enable() -> None:
             LoadTextModHook.disable()
     return None
 
-build_mod(hooks=[PickupAtRestHook, HandlePickupHook, LoadTextModHook, InitializeFromInventoryHook], on_enable=Enable)
+build_mod(hooks=[PickupAtRestHook, HandlePickupHook, LoadTextModHook, InitializeFromInventoryHook, AIPawnDiedHook, SpawnItemsHook, PlayWeaponSwitchHook], on_enable=Enable)
